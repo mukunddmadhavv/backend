@@ -11,10 +11,11 @@ const cors = require('cors');
 const allowedOrigins = ['https://your-frontend-site.netlify.app']; // Replace with your actual Netlify URL
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST'],
+  origin: 'https://track-now.netlify.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
 
 
 app.use(express.json());
