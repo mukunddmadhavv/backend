@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 
-const allowedOrigins = ['https://your-frontend-site.netlify.app']; // Replace with your actual Netlify URL
+const allowedOrigins = ['https://track-now.netlify.app']; // Replace with your actual Netlify URL
 
 app.use(cors({
   origin: 'https://track-now.netlify.app',
