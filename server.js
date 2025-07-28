@@ -1,14 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 
 const memberRoutes = require('./routes/memberRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const cors = require('cors');
 
-app.use(cors());
+const allowedOrigins = ['https://your-frontend-site.netlify.app']; // Replace with your actual Netlify URL
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
+
 app.use(express.json());
 
 // 👉 Routes
@@ -21,6 +29,11 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected Successfully");
     // Start server only after DB connects
+
+app.get('/', (req, res) => {
+  res.send('API is working');
+});
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
