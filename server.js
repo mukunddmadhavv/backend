@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const memberRoutes = require('./routes/memberRoutes');
+const authRoutes = require('./routes/authRoutes'); // 👈 added
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,12 +17,11 @@ app.use(cors({
   credentials: true
 }));
 
-
-
 app.use(express.json());
 
 // 👉 Routes
 app.use('/api/members', memberRoutes);
+app.use('/api/auth', authRoutes); // 👈 added
 
 // 👉 MongoDB Connection
 console.log("🌐 Connecting to MongoDB...");
@@ -29,11 +29,10 @@ console.log("🌐 Connecting to MongoDB...");
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected Successfully");
-    // Start server only after DB connects
 
-app.get('/', (req, res) => {
-  res.send('API is working');
-});
+    app.get('/', (req, res) => {
+      res.send('API is working');
+    });
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
