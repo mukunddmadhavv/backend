@@ -34,10 +34,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ GET /api/members - Fetch all registered members
+// ✅ GET /api/members - Fetch all or owner-specific members
 router.get('/', async (req, res) => {
   try {
-    const members = await Member.find();
+    const { ownerId } = req.query;
+
+    const members = ownerId
+      ? await Member.find({ businessOwner: ownerId }) // ✅ Query filtering
+      : await Member.find();
+
     res.status(200).json(members);
   } catch (err) {
     console.error('❌ Error fetching members:', err);
@@ -45,7 +50,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ NEW: GET /api/members/:businessOwner - Fetch members of a specific business owner
+// ✅ NEW: GET /api/members/:businessOwner - Fetch members of a specific business owner (alt)
 router.get('/:businessOwner', async (req, res) => {
   try {
     const { businessOwner } = req.params;
