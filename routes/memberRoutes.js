@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Member = require('../models/Member'); // Your Mongoose model
 
-// POST /api/members - Register a new member
+// ✅ POST /api/members - Register a new member
 router.post('/', async (req, res) => {
   try {
     const {
@@ -12,6 +12,7 @@ router.post('/', async (req, res) => {
       moneyPaid,
       dateJoined,
       planValidity,
+      businessOwner // ✅ added
       // profilePic // skip for now
     } = req.body;
 
@@ -22,6 +23,7 @@ router.post('/', async (req, res) => {
       moneyPaid,
       dateJoined,
       planValidity,
+      businessOwner // ✅ save this
     });
 
     await newMember.save();
@@ -39,6 +41,18 @@ router.get('/', async (req, res) => {
     res.status(200).json(members);
   } catch (err) {
     console.error('❌ Error fetching members:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ NEW: GET /api/members/:businessOwner - Fetch members of a specific business owner
+router.get('/:businessOwner', async (req, res) => {
+  try {
+    const { businessOwner } = req.params;
+    const members = await Member.find({ businessOwner });
+    res.status(200).json(members);
+  } catch (err) {
+    console.error('❌ Error fetching owner-specific members:', err);
     res.status(500).json({ error: err.message });
   }
 });
