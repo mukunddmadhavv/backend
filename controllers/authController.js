@@ -1,5 +1,6 @@
 const BusinessOwner = require('../models/BusinessOwner');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Register
 exports.registerBusinessOwner = async (req, res) => {
@@ -48,7 +49,23 @@ exports.loginBusinessOwner = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.status(200).json({ message: 'Login successful', owner });
+    // ✅ Generate JWT token
+    const token = jwt.sign(
+      { id: owner._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' } // you can change this as needed
+    );
+
+    // ✅ Send token and owner data
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      owner: {
+        _id: owner._id,
+        businessName: owner.businessName,
+        mobile: owner.mobile,
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: 'Login error', error: err.message });
   }
