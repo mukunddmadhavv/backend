@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Member = require('../models/Member'); // Your Mongoose model
+const Member = require('../models/Member');
+const authenticate = require('../middleware/auth'); // ✅ Import auth middleware
 
-// ✅ POST /api/members - Register a new member
-router.post('/', async (req, res) => {
+// ✅ POST /api/members - Register a new member (auth required)
+router.post('/', authenticate, async (req, res) => {
   try {
     const {
       fullName,
@@ -11,9 +12,7 @@ router.post('/', async (req, res) => {
       email,
       moneyPaid,
       dateJoined,
-      planValidity,
-      businessOwner // ✅ added
-      // profilePic // skip for now
+      planValidity
     } = req.body;
 
     const newMember = new Member({
@@ -23,7 +22,7 @@ router.post('/', async (req, res) => {
       moneyPaid,
       dateJoined,
       planValidity,
-      businessOwner // ✅ save this
+      businessOwner: req.user._id // ✅ Automatically associate the logged-in owner
     });
 
     await newMember.save();
@@ -34,15 +33,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ GET /api/members - Fetch all or owner-specific members
-router.get('/', async (req, res) => {
+// ✅ GET /api/members - Fetch all members of current owner (auth required)
+router.get('/', authenticate, async (req, res) => {
   try {
-    const { ownerId } = req.query;
-
-    const members = ownerId
-      ? await Member.find({ businessOwner: ownerId }) // ✅ Query filtering
-      : await Member.find();
-
+    const members = await Member.find({ businessOwner: req.user._id });
     res.status(200).json(members);
   } catch (err) {
     console.error('❌ Error fetching members:', err);
@@ -50,7 +44,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ NEW: GET /api/members/:businessOwner - Fetch members of a specific business owner (alt)
+// ❌ OPTIONAL/INSECURE: GET /api/members/:businessOwner - Public, remove if not needed
 router.get('/:businessOwner', async (req, res) => {
   try {
     const { businessOwner } = req.params;
