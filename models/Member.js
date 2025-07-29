@@ -7,8 +7,12 @@ const memberSchema = new mongoose.Schema({
   moneyPaid: { type: Number, required: true },
   dateJoined: { type: Date, required: true },
   planValidity: { type: String, required: true },
-businessOwner: { type: String, required: true },
-  // profilePic: { type: String } // Skipped for now
+  businessOwner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'BusinessOwner',
+    required: true,
+  },
+  // profilePic: { type: String } // You can enable this later
 });
 
 module.exports = mongoose.model('Member', memberSchema);
