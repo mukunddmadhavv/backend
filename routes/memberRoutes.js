@@ -44,16 +44,6 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// ❌ OPTIONAL/INSECURE: GET /api/members/:businessOwner - Public, remove if not needed
-router.get('/:businessOwner', async (req, res) => {
-  try {
-    const { businessOwner } = req.params;
-    const members = await Member.find({ businessOwner });
-    res.status(200).json(members);
-  } catch (err) {
-    console.error('❌ Error fetching owner-specific members:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+
 
 module.exports = router;
