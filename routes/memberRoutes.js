@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Member = require('../models/Member');
-const authenticate = require('../middleware/auth'); // ✅ Import auth middleware
 
-// ✅ POST /api/members - Register a new member (auth required)
-router.post('/', authenticate, async (req, res) => {
+// ✅ Register Member (ownerMobile comes from frontend)
+router.post('/', async (req, res) => {
   try {
     const {
       fullName,
@@ -12,8 +11,13 @@ router.post('/', authenticate, async (req, res) => {
       email,
       moneyPaid,
       dateJoined,
-      planValidity
+      planValidity,
+      ownerMobile, // ✅ from frontend
     } = req.body;
+
+    if (!ownerMobile || !fullName || !mobile || !moneyPaid || !dateJoined || !planValidity) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
 
     const newMember = new Member({
       fullName,
@@ -22,7 +26,7 @@ router.post('/', authenticate, async (req, res) => {
       moneyPaid,
       dateJoined,
       planValidity,
-      businessOwner: req.user._id // ✅ Automatically associate the logged-in owner
+      ownerMobile,
     });
 
     await newMember.save();
@@ -33,17 +37,21 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-// ✅ GET /api/members - Fetch all members of current owner (auth required)
-router.get('/', authenticate, async (req, res) => {
+// ✅ Get Members (by ownerMobile in query param)
+router.get('/', async (req, res) => {
+  const { ownerMobile } = req.query;
+
+  if (!ownerMobile) {
+    return res.status(400).json({ message: 'Missing ownerMobile in query' });
+  }
+
   try {
-    const members = await Member.find({ businessOwner: req.user._id });
+    const members = await Member.find({ ownerMobile });
     res.status(200).json(members);
   } catch (err) {
     console.error('❌ Error fetching members:', err);
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 module.exports = router;
