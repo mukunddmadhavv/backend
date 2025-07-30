@@ -1,8 +1,7 @@
 const BusinessOwner = require('../models/BusinessOwner');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-// Register
+// ✅ Register Controller
 exports.registerBusinessOwner = async (req, res) => {
   try {
     const { businessName, mobile, password } = req.body;
@@ -17,6 +16,7 @@ exports.registerBusinessOwner = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newOwner = new BusinessOwner({
       businessName,
       mobile,
@@ -30,7 +30,7 @@ exports.registerBusinessOwner = async (req, res) => {
   }
 };
 
-// Login
+// ✅ Login Controller (no JWT)
 exports.loginBusinessOwner = async (req, res) => {
   try {
     const { mobile, password } = req.body;
@@ -49,17 +49,9 @@ exports.loginBusinessOwner = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // ✅ Generate JWT token
-    const token = jwt.sign(
-      { id: owner._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' } // you can change this as needed
-    );
-
-    // ✅ Send token and owner data
+    // ✅ No JWT – return owner data only
     res.status(200).json({
       message: 'Login successful',
-      token,
       owner: {
         _id: owner._id,
         businessName: owner.businessName,
