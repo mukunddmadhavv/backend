@@ -48,8 +48,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    // ✅ Remove hashed password before sending
-    const { password, ...ownerData } = user.toObject();
+    // ✅ Rename destructured password to avoid conflict with request body
+    const { password: hashedPassword, ...ownerData } = user.toObject();
+
     res.status(200).json({ message: 'Login successful', owner: ownerData });
   } catch (err) {
     console.error('❌ Error during login:', err);
