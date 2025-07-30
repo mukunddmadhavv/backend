@@ -3,7 +3,12 @@ const router = express.Router();
 const BusinessOwner = require('../models/BusinessOwner');
 const bcrypt = require('bcrypt');
 
-// Register Route
+// ✅ Test GET route to confirm /api/auth is working
+router.get('/', (req, res) => {
+  res.send('🔐 Auth route is working');
+});
+
+// ✅ Register Route
 router.post('/register', async (req, res) => {
   const { businessName, mobile, password } = req.body;
 
@@ -23,8 +28,8 @@ router.post('/register', async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: 'Signup successful' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Signup failed', error: err });
+    console.error('❌ Error during signup:', err);
+    res.status(500).json({ message: 'Signup failed', error: err.message });
   }
 });
 
@@ -43,11 +48,12 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-const { password, ...ownerData } = user.toObject(); // remove hashed password
-res.status(200).json({ message: 'Login successful', owner: ownerData });
+    // ✅ Remove hashed password before sending
+    const { password, ...ownerData } = user.toObject();
+    res.status(200).json({ message: 'Login successful', owner: ownerData });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Login failed', error: err });
+    console.error('❌ Error during login:', err);
+    res.status(500).json({ message: 'Login failed', error: err.message });
   }
 });
 
