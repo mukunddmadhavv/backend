@@ -54,31 +54,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-//update member and also filter by ownerMobile
-router.put('/:id', async (req, res) => {
-  try {
-    const { ownerMobile } = req.body;
 
-    if (!ownerMobile) {
-      return res.status(400).json({ message: 'Missing ownerMobile in request body' });
-    }
-
-    const updatedMember = await Member.findOneAndUpdate(
-      { _id: req.params.id, ownerMobile }, // 🔒 Secure filter
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedMember) {
-      return res.status(404).json({ message: 'Member not found or not authorized' });
-    }
-
-    res.status(200).json(updatedMember);
-  } catch (error) {
-    console.error('❌ Error updating member:', error);
-    res.status(500).json({ message: 'Server error during update' });
-  }
-});
 
 
 module.exports = router;
