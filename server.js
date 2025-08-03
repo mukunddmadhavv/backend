@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const memberRoutes = require('./routes/memberRoutes');
 const authRoutes = require('./routes/authRoutes'); // 👈 added
+const businessOwnerRoutes = require('./routes/businessOwnerRoutes'); // ✅ NEW LINE
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +24,8 @@ app.use(express.json());
 // 👉 Routes
 app.use('/api/members', memberRoutes);
 app.use('/api/auth', authRoutes); // 👈 added
+app.use('/api/business-owners', businessOwnerRoutes); // ✅ NEW LINE
+
 
 // 👉 MongoDB Connection
 console.log("🌐 Connecting to MongoDB...");
